@@ -1,4 +1,4 @@
-import fxp from 'fast-xml-parser';
+import { XMLParser } from 'fast-xml-parser';
 import {
   ParsedCaptions,
   CaptionSegment,
@@ -48,13 +48,13 @@ export const defaultWindowPosition: WindowPosition = {
  */
 
 export const parseSrv3XML = (xmlString: string) => {
-  console.log('Parsing XML');
-
-  const xml = fxp.parse(xmlString, {
+  const options = {
     attributeNamePrefix: '@_',
     ignoreAttributes: false,
     trimValues: false,
-  });
+  };
+  const fxp = new XMLParser(options);
+  const xml = fxp.parse(xmlString);
   if (!xml.timedtext) return null;
 
   const cc: ParsedCaptions = {
@@ -112,12 +112,12 @@ export const parseSrv3XML = (xmlString: string) => {
             ws['@_ju'] === '0'
               ? 'start'
               : ws['@_ju'] === '1'
-              ? 'end'
-              : ws['@_ju'] === '2'
-              ? 'center'
-              : ws['@_ju'] === '3'
-              ? 'justify'
-              : 'center',
+                ? 'end'
+                : ws['@_ju'] === '2'
+                  ? 'center'
+                  : ws['@_ju'] === '3'
+                    ? 'justify'
+                    : 'center',
           printDirection:
             ws['@_pd'] === '0' ? 'ltr' : ws['@_pd'] === '1' ? 'rtl' : 'ltr',
           scrollDirection:
